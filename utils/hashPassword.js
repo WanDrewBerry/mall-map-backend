@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const newPassword = "admin123*"; // ✅ Choose a strong password
 bcrypt.hash(newPassword, 10, (err, hashedPassword) => {

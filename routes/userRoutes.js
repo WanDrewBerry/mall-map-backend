@@ -30,11 +30,18 @@ router.post('/login', async (req, res) => {
     const decodedToken = jwt.decode(token);
     console.log("Decoded Token Payload:", decodedToken);
 
+    // res.status(200).json({
+    //   message: 'Login successful',
+    //   token,
+    //   user: { id: user._id, email: user.email, username: user.username, role: user.role },
+    // });
+
     res.status(200).json({
       message: 'Login successful',
-      token,
+      accessToken: token, // ✅ Rename to match frontend expectation
       user: { id: user._id, email: user.email, username: user.username, role: user.role },
     });
+
   } catch (error) {
     console.error('Error during login:', error.message);
     res.status(500).json({ message: 'Internal server error during login.' });

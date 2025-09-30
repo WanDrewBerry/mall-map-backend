@@ -56,15 +56,14 @@ app.use(
 
 // Connect to MongoDB
 connectDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-    });
-  })
   .catch((err) => {
     console.error('❌ MongoDB connection failed:', err.message);
-    process.exit(1); // Exit process if DB connection fails
+    process.exit(1);
   });
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
 
 // Routes
 const mallRoutes = require('./routes/mallRoutes');

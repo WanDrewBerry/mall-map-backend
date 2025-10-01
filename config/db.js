@@ -5,18 +5,18 @@ const mongoURI =
     ? process.env.CLOUD_MONGO_URI
     : process.env.LOCAL_MONGO_URI;
 
-console.log(`🌐 Connecting to MongoDB: ${mongoURI}`);
-
-mongoose
-  .connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
+const connectDB = async () => {
+  console.log(`🌐 Connecting to MongoDB: ${mongoURI}`);
+  try {
+    await mongoose.connect(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log('✅ MongoDB connection established successfully.');
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
-  });
+    throw err;
+  }
+};
 
-module.exports = mongoose;
+module.exports = connectDB;

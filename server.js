@@ -1,21 +1,21 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const connectDB = require('./config/db');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const { verifyToken, blocklist } = require('./middlewares/authMiddleware');
-const { uploadMiddleware, handleUploadErrors } = require('./middlewares/uploadMiddleware');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 
-// Load environment variables
+const { verifyToken, blocklist } = require('./middlewares/authMiddleware');
+const { uploadMiddleware, handleUploadErrors } = require('./middlewares/uploadMiddleware');
+
+// ✅ Load environment variables
 dotenv.config();
 
-// Initialize Express app
+// ✅ Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// ✅ Middleware
 app.use(express.json());
 app.use(cookieParser());
 
@@ -43,10 +43,10 @@ app.use(cors({
 
 // ✅ Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
-  setHeaders: (res, path) => {
-    if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) {
       res.setHeader("Content-Type", "image/jpeg");
-    } else if (path.endsWith(".png")) {
+    } else if (filePath.endsWith(".png")) {
       res.setHeader("Content-Type", "image/png");
     } else {
       res.setHeader("Content-Type", "application/octet-stream");
@@ -55,14 +55,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
 }));
 
 // ✅ Connect to MongoDB
+const connectDB = require('./config/db');
 connectDB().catch((err) => {
   console.error('❌ MongoDB connection failed:', err.message);
   process.exit(1);
-});
-
-// ✅ Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
 });
 
 // ✅ Routes
@@ -159,4 +155,9 @@ app.use((err, req, res, next) => {
     message: err.message || 'Internal Server Error',
     error: process.env.NODE_ENV === 'development' ? err.stack : undefined,
   });
+});
+
+// ✅ Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });

@@ -22,7 +22,8 @@ app.use(cookieParser());
 // ✅ CORS Configuration
 const allowedOrigins = [
   "https://mall-map-eight.vercel.app",
-  "http://localhost:5173"
+  "http://localhost:5173",
+  "https://mall-b8iiv0987-andrews-projects-a1becd8a.vercel.app",
 ];
 
 app.use(cors({

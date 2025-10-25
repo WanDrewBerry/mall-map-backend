@@ -5,8 +5,15 @@ const mongoURI =
     ? process.env.CLOUD_MONGO_URI
     : process.env.LOCAL_MONGO_URI;
 
+if (!mongoURI) {
+  throw new Error('MongoDB URI is not defined in environment variables.');
+}
+
 const connectDB = async () => {
-  console.log(`🌐 Connecting to MongoDB: ${mongoURI}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`🌐 Connecting to MongoDB: ${mongoURI}`);
+  }
+
   try {
     await mongoose.connect(mongoURI, {
       useNewUrlParser: true,

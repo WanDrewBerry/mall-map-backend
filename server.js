@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 // ✅ CORS Configuration
 const allowedOrigins = [
-  "https://mall-map-eight.vercel.app",
+  "https://mall-map-frontend.vercel.app",
   "http://localhost:5173",
   "https://mall-b8iiv0987-andrews-projects-a1becd8a.vercel.app",
 ];
@@ -41,6 +41,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Set-Cookie']
 }));
+
+// ✅ Handle preflight OPTIONS requests globally
+app.options('*', cors());
 
 // ✅ Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads"), {

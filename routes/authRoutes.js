@@ -1,20 +1,18 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { registerUser } = require('../controllers/userController');
-const { verifyToken, extractToken, isTokenBlocklisted } = require('../middlewares/authMiddleware');
+const { extractToken, isTokenBlocklisted } = require('../middlewares/authMiddleware');
 const blocklist = require('../utils/blocklist');
 
 const router = express.Router();
 
-// 🔐 Register a new user with debug logs
+// 🔔 Route test
+router.get('/ping', (req, res) => res.send('🔔 Auth route is alive'));
+
+// 🔐 Register a new user
 router.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
-
-  console.log("📥 Registration request received");
-  console.log("👤 Username:", username);
-  console.log("📧 Email:", email);
-  console.log("🔑 Password:", password);
+  console.log("📥 Registration request received", { username, email });
 
   try {
     const existingUser = await User.findOne({ email });
@@ -67,13 +65,10 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// 🔑 Login route with debug logs
+// 🔑 Login route
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
-  console.log("📥 Login request received");
-  console.log("📧 Email:", email);
-  console.log("🔑 Password:", password);
+  console.log("📥 Login request received", { email });
 
   try {
     const user = await User.findOne({ email });
@@ -124,10 +119,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 🚪 Logout route (JWT blocklist + cookie clear)
+// 🚪 Logout route
 router.post('/logout', (req, res) => {
   const authHeader = req.header('Authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
+  if (authHeader?.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1];
     blocklist.add(token);
     console.log('⛔ Token Blocklisted:', token);
@@ -142,7 +137,7 @@ router.post('/logout', (req, res) => {
   res.status(200).json({ status: false, message: 'Logged out successfully.' });
 });
 
-// 🔍 Auth status check (manual token + blocklist)
+// 🔍 Auth status check
 router.get('/status', (req, res) => {
   const authHeader = req.header('Authorization');
   const token = extractToken(authHeader);
@@ -158,7 +153,10 @@ router.get('/status', (req, res) => {
   }
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    const verified = jwt.verify(token, process.env.JWT_SECRET, {
+      issuer: 'YourAppName',
+      audience: 'YourAppUsers',
+    });
     console.log('✅ Token verified for user:', verified.username);
     return res.status(200).json({ status: true, user: verified });
   } catch (err) {

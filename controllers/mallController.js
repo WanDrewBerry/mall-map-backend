@@ -106,6 +106,11 @@ const uploadImage = async (req, res) => {
       console.log("🚨 Unauthorized upload attempt.");
       return res.status(403).json({ message: "Unauthorized: You must be logged in to upload images." });
     }
+    
+    if (req.user.role !== "admin") {
+  console.log("🚨 Unauthorized: Only admins can upload images.");
+  return res.status(403).json({ message: "Unauthorized: Only admins can upload images." });
+}
 
     // ✅ Fix: Ensure `userId` is correctly passed in request
     const userId = req.body.userId || req.user._id;

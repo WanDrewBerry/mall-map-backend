@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 
+// ✅ Middleware imports
 const { verifyToken, blocklist } = require('./middlewares/authMiddleware');
 const { uploadMiddleware, handleUploadErrors } = require('./middlewares/uploadMiddleware');
 
@@ -65,35 +66,17 @@ connectDB().catch((err) => {
   process.exit(1);
 });
 
-// ✅ Routes
+// ✅ Route imports
 const mallRoutes = require('./routes/mallRoutes');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const imageUploadRoutes = require('./routes/imageUploadRoute'); // ✅ Import image upload routes
 
+// ✅ Mount routes
 app.use('/api/malls', mallRoutes);
+app.use('/api/malls', imageUploadRoutes); // ✅ Mount image upload routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
-
-// ✅ Image upload route
-app.post('/api/malls/:id/upload', verifyToken, uploadMiddleware, handleUploadErrors, async (req, res) => {
-  try {
-    if (!req.file) {
-      console.error("🚨 No file uploaded.");
-      return res.status(400).json({ message: "No file uploaded." });
-    }
-
-    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-    console.log("✅ Image successfully uploaded:", imageUrl);
-
-    res.status(200).json({
-      message: "✅ Image uploaded successfully!",
-      imageUrl,
-    });
-  } catch (err) {
-    console.error('❌ Image upload error:', err.message);
-    res.status(500).json({ message: 'Image upload failed', error: err.message });
-  }
-});
 
 // ✅ Refresh token route
 app.post('/api/auth/refresh', (req, res) => {
